@@ -39,6 +39,35 @@ namespace TechApi.Controllers
             return Ok(new { message = "Customer Data Saved!" });
         }
 
+        [HttpPut]
+        public ActionResult UpdateCustomerData(CustomerRequestDto customerRequestDto)
+        {
+            using SqlConnection connection = new SqlConnection
+            {
+                ConnectionString = "Server=localhost;Database=shopDb;Trusted_Connection=True;MultipleActiveResultSets=true;"
+            };
+
+            SqlCommand command = new SqlCommand
+            {
+                CommandText = "sp_UpdateCustomerDetails",
+                CommandType = System.Data.CommandType.StoredProcedure,
+                Connection = connection
+            };
+
+            command.Parameters.AddWithValue("@CustomerId", customerRequestDto.CustomerId);
+            command.Parameters.AddWithValue("@FirstName", customerRequestDto.FirstName);
+            command.Parameters.AddWithValue("@LastName", customerRequestDto.LastName);
+            command.Parameters.AddWithValue("@Email", customerRequestDto.Email);
+            command.Parameters.AddWithValue("@Mobile", customerRequestDto.Mobile);
+            command.Parameters.AddWithValue("@RegistrationDate", customerRequestDto.RegistrationDate);
+
+            connection.Open();
+            command.ExecuteNonQuery();
+            connection.Close();
+
+            return Ok(new { message = "Customer Data Updated!" });
+        }
+
         [HttpDelete("{customerId}")]
         public ActionResult DeleteCustomerData(int customerId)
         {
@@ -49,7 +78,7 @@ namespace TechApi.Controllers
 
             using SqlCommand command = new SqlCommand
             {
-                CommandText = "sp_DeleteCustomerDetails", 
+                CommandText = "sp_DeleteCustomerDetails",
                 CommandType = System.Data.CommandType.StoredProcedure,
                 Connection = connection
             };
